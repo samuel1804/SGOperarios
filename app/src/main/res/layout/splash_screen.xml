@@ -10,7 +10,7 @@
         android:contentDescription="@string/app_name"
         android:scaleType="centerInside"
         android:layout_centerInParent="true"
-        android:src="@drawable/hatunsol_logo"
+        android:src="@drawable/logo_ej"
 
         />
 

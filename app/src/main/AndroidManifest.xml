@@ -163,7 +163,7 @@
 
 
         <activity
-            android:name=".MapaCliente"
+            android:name=".BuscarOperarioActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:icon="@drawable/ic_launcher"
             android:label="Presupuestar Material"
@@ -187,7 +187,7 @@
             android:icon="@drawable/ic_launcher"
             android:label="Seleccione una Ferretería"
             android:launchMode="singleTask"
-            android:parentActivityName=".MapaCliente"
+            android:parentActivityName=".BuscarOperarioActivity"
             android:screenOrientation="portrait"></activity>
 
 

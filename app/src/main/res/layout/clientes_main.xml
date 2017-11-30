@@ -16,34 +16,32 @@
         >
 
 
-
         <LinearLayout
             android:id="@+id/llInicio"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:gravity="center"
             android:orientation="vertical"
-
             >
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="100dp"
+                android:layout_height="130dp"
                 android:layout_margin="10dp"
-                android:background="@drawable/hatunsol_logo" />
+                android:background="@drawable/logo_ej" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Bienvenido a Hatunsol"
+                android:text="Bienvenido a Proyecta SAC"
                 android:textSize="20dp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Seleccione una Opción para ayudarlo con el sueño de su Casa" />
+                android:text="Seleccione una Opción" />
 
 
         </LinearLayout>
@@ -57,91 +55,69 @@
             android:background="@color/white"
 
 
-           >
+            >
 
 
             <LinearLayout
-                android:id="@+id/btMisSolicitudes"
+                android:id="@+id/btUbicarOperarios"
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
+                android:background="@drawable/efecto_boton_gris"
+                android:clickable="true"
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
-                android:clickable="true"
-                android:background="@drawable/efecto_boton_gris"
 
                 >
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="3dp"
-    android:background="#FE2E2E"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:background="#FE2E2E" />
+
                 <ImageButton
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@drawable/registro_contacto"
-                    android:scaleType="fitCenter"
+                    android:background="@drawable/maps"
                     android:clickable="false"
-                    />
+                    android:scaleType="fitCenter"
+                    android:id="@+id/imageButton" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Mis Solicitudes" />
+                    android:text="Ubicar Operarios" />
             </LinearLayout>
 
+
             <LinearLayout
-                android:id="@+id/btnBuscarFerreteria"
+                android:id="@+id/btOperariosServicio"
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
                 android:background="@drawable/efecto_boton_gris"
-                android:clickable="true">
+                android:clickable="true"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="3dp"
-                    android:background="#01DFD7"/>
+                    android:background="#01DF01" />
+
                 <ImageButton
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@drawable/establecimiento_icon"
-                    android:scaleType="fitCenter"
-                    android:clickable="false"/>
+                    android:background="@drawable/search_client"
+                    android:clickable="false"
+                    android:scaleType="fitCenter" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Presupuestos de Materiales" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/btBuscarMaestros"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
-                android:background="@drawable/efecto_boton_gris"
-                android:clickable="true">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="3dp"
-                    android:background="#01DF01"/>
-                <ImageButton
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@drawable/maestro"
-                    android:scaleType="fitCenter"
-                    android:clickable="false"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Presupuestos de Mano de Obra" />
+                    android:text="Operarios por Servicio" />
             </LinearLayout>
 
             <LinearLayout
@@ -149,20 +125,22 @@
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:clickable="true"
                 android:background="@drawable/efecto_boton_gris"
+                android:clickable="true"
+                android:gravity="center_horizontal"
                 android:orientation="vertical">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="3dp"
-                    android:background="#D7DF01"/>
+                    android:background="#D7DF01" />
+
                 <ImageButton
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="@drawable/contactus"
-                    android:scaleType="fitCenter"
-                    android:clickable="false"/>
+                    android:clickable="false"
+                    android:scaleType="fitCenter" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -208,7 +186,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:scaleType="centerInside"
-                        android:src="@drawable/hatunsol_logo" />
+                        android:src="@drawable/logo_ej" />
 
                 </LinearLayout>
 
