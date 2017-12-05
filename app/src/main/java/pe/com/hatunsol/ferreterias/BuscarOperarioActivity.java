@@ -8,10 +8,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +25,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.guna.libmultispinner.MultiSelectionSpinner;
 
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HTTP;
@@ -32,29 +35,36 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import pe.com.hatunsol.ferreterias.dialogframent.AceptarDialogfragment;
 import pe.com.hatunsol.ferreterias.dialogframent.ProgressDialogFragment;
+import pe.com.hatunsol.ferreterias.entity.BE_Empleado;
+import pe.com.hatunsol.ferreterias.entity.BE_Servicio;
 import pe.com.hatunsol.ferreterias.entity.Establecimiento;
 import pe.com.hatunsol.ferreterias.entity.RestResult;
+import pe.com.hatunsol.ferreterias.entity.StateVO;
 import pe.com.hatunsol.ferreterias.rest.RestClient;
 
 /**
  * Created by Sistemas on 09/03/2015.
  */
 
-public class BuscarOperarioActivity extends ActionBarActivity implements OnMapReadyCallback, AceptarDialogfragment.AceptarDialogfragmentListener {
+public class BuscarOperarioActivity extends ActionBarActivity implements OnMapReadyCallback, AceptarDialogfragment.AceptarDialogfragmentListener, MultiSelectionSpinner.OnMultipleItemsSelectedListener {
     private SupportMapFragment supportBarFragment;
     private GoogleMap googlemap;
     private ProgressDialogFragment mProgressDialogFragment;
-    private List<Establecimiento> lstEstablecimiento;
+    private List<BE_Empleado> lstEstablecimiento;
+    private List<BE_Servicio> lstServicio;
     private LinearLayout llMenu;
+    private MultiSelectionSpinner spFiltro;
     public Establecimiento provLocal;
     private LatLng latLng;
+    private String Filtro = "";
     private MarkerOptions markeroptions;
-    private Button btCotizar;
+    //  private Button btCotizar;
     HashMap<Marker, Integer> eventMarkerMap = new HashMap<Marker, Integer>();
 
     LocationManager locationmanager;
@@ -65,13 +75,15 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buscaroperario);
 
-        btCotizar = (Button) findViewById(R.id.btCotizar);
-        btCotizar.setOnClickListener(btCotizarOnClickListener);
+      /*  btCotizar = (Button) findViewById(R.id.btCotizar);
+        btCotizar.setOnClickListener(btCotizarOnClickListener);*/
         llMenu = (LinearLayout) findViewById(R.id.llMenu);
+        spFiltro = (MultiSelectionSpinner) findViewById(R.id.spFiltro);
         supportBarFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragMap);
-        supportBarFragment.getMapAsync(BuscarOperarioActivity.this);
+        //supportBarFragment.getMapAsync(BuscarOperarioActivity.this);
         //
-        // new CargarDatos().execute();
+        new CargarServicios().execute();
+
 
     }
 
@@ -118,6 +130,28 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
 
     }
 
+    @Override
+    public void selectedIndices(List<Integer> indices) {
+
+    }
+
+
+
+
+    @Override
+    public void selectedStrings(List<String> strings) {
+        Filtro = "";
+
+        for (int i = 0; i < strings.size(); i++) {
+            if (i == 0) {
+                Filtro += lstServicio.get(i).getIdServicio();
+            } else {
+                Filtro += "," +lstServicio.get(i).getIdServicio();
+            }
+        }
+        new CargarDatos().execute();
+    }
+
 
     public class CargarDatos extends AsyncTask<Void, Void, RestResult> {
         @Override
@@ -138,22 +172,25 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
             mProgressDialogFragment.dismissAllowingStateLoss();
 
             try {
-                JSONObject jsonobj = new JSONObject(restResult.getResult());
-                JSONArray jarray = jsonobj.getJSONArray("ListarResult");
-                Establecimiento provloc = new Establecimiento();
-                lstEstablecimiento = new ArrayList<Establecimiento>();
+
+                JSONArray jarray = new JSONArray(restResult.getResult());
+                BE_Empleado provloc = new BE_Empleado();
+                lstEstablecimiento = new ArrayList<BE_Empleado>();
+                JSONObject jsonobj;
                 for (int i = 0; i < jarray.length(); i++) {
                     jsonobj = jarray.getJSONObject(i);
-                    provloc = new Establecimiento();
-                    provloc.setNombreComercial(jsonobj.getString("NombreComercial"));
-                    provloc.setIdEstablecimiento(jsonobj.getInt("IdEstablecimiento"));
+                    provloc = new BE_Empleado();
+                    provloc.setIdEmpleado(jsonobj.getInt("IdEmpleado"));
+                    provloc.setServicio(jsonobj.getString("Servicio"));
+                    provloc.setNombres_Operario(jsonobj.getString("Nombres_Operario"));
                     provloc.setLatitud(jsonobj.getString("Latitud"));
                     provloc.setLongitud(jsonobj.getString("Longitud"));
-                    provloc.setDireccion(jsonobj.getString("Direccion"));
+                    provloc.setDisponibilidad(jsonobj.getString("Disponibilidad"));
                     lstEstablecimiento.add(provloc);
                 }
 
-                LlenarMapa();
+                supportBarFragment.getMapAsync(BuscarOperarioActivity.this);
+                //LlenarMapa();
                 //lstEstablecimiento = new Gson().fromJson(restResult, ListProveedorLocal.class);
                 //atEstablecimiento = (AutoCompleteTextView) findViewById(R.id.atEstablecimiento);
 
@@ -179,11 +216,119 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
             StringEntity stringEntity = null;
             //Bundle extras = getActivity().getIntent().getExtras();
             //int ProveedorLocalId = extras.getInt("ProveedorLocalId");
-            return new RestClient().get("EstablecimientoWS.svc/Establecimiento?Latitud=" + markeroptions.getPosition().latitude + "&Longitud=" + markeroptions.getPosition().longitude, stringEntity, 30000);
+            //markeroptions.getPosition().latitude + "&Longitud=" + markeroptions.getPosition().longitude
+            return new RestClient().get("WSEmpleado.svc/Listar?idservicio=" + Filtro, stringEntity, 30000);
 
         }
     }
 
+    AdapterView.OnItemSelectedListener spFiltroOnItemSelectedListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            new CargarDatos().execute();
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+
+        }
+    };
+
+
+    public class CargarServicios extends AsyncTask<Void, Void, RestResult> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            if (mProgressDialogFragment == null) {
+                mProgressDialogFragment = new ProgressDialogFragment();
+                mProgressDialogFragment.setMensaje("Cargando..");
+                mProgressDialogFragment.show(BuscarOperarioActivity.this.getFragmentManager(), ProgressDialogFragment.TAG);
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(RestResult restResult) {
+            super.onPostExecute(restResult);
+            mProgressDialogFragment.dismissAllowingStateLoss();
+
+            try {
+
+                JSONArray jarray = new JSONArray(restResult.getResult());
+                BE_Servicio provloc = new BE_Servicio();
+                lstServicio = new ArrayList<BE_Servicio>();
+                JSONObject jsonobj;
+                List<String> myResArrayList = new ArrayList<String>();
+
+                lstServicio.add(0, new BE_Servicio(0, "Seleccione"));
+                myResArrayList.add(0, "Todos");
+                for (int i = 0; i < jarray.length(); i++) {
+                    jsonobj = jarray.getJSONObject(i);
+                    provloc = new BE_Servicio();
+                    provloc.setIdServicio(jsonobj.getInt("IdServicio"));
+                    provloc.setDesc_Serv(jsonobj.getString("Desc_Serv"));
+
+                    lstServicio.add(provloc);
+                    myResArrayList.add(i+1, provloc.getDesc_Serv());
+                }
+
+
+
+                Spinner spinner = (Spinner) findViewById(R.id.spFiltro);
+
+
+                MultiSelectionSpinner multiSelectionSpinner = (MultiSelectionSpinner) findViewById(R.id.spFiltro);
+                multiSelectionSpinner.setItems(myResArrayList);
+
+
+                int[] arra = new int[jarray.length()];
+                for (int i = 0; i < jarray.length(); i++) {
+                    arra[i] = i;
+                    if (i == 0) {
+                        Filtro += lstServicio.get(i).getIdServicio();
+                    } else {
+                        Filtro += "," + lstServicio.get(i).getIdServicio();
+                    }
+
+                }
+                multiSelectionSpinner.setSelection(arra);
+                multiSelectionSpinner.setListener(BuscarOperarioActivity.this);
+
+                new CargarDatos().execute();
+
+                //supportBarFragment.getMapAsync(BuscarOperarioActivity.this);
+                //LlenarMapa();
+                //lstEstablecimiento = new Gson().fromJson(restResult, ListProveedorLocal.class);
+                //atEstablecimiento = (AutoCompleteTextView) findViewById(R.id.atEstablecimiento);
+
+                /*ArrayAdapter<Establecimiento> dataAdapter = new ArrayAdapter<Establecimiento>
+                        (getActivity(), android.R.layout.simple_spinner_item, lstEstablecimiento);*/
+
+
+
+               /* atEstablecimiento.setThreshold(1);
+                atEstablecimiento.setAdapter(dataAdapter);
+
+                atEstablecimiento.setOnItemClickListener(atEstablecimientosOnItemClickListener);*/
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+
+        @Override
+        protected RestResult doInBackground(Void... params) {
+            StringEntity stringEntity = null;
+            //Bundle extras = getActivity().getIntent().getExtras();
+            //int ProveedorLocalId = extras.getInt("ProveedorLocalId");
+            //markeroptions.getPosition().latitude + "&Longitud=" + markeroptions.getPosition().longitude
+            return new RestClient().get("WSServicio.svc/Listar", stringEntity, 30000);
+
+        }
+    }
 
     View.OnClickListener RegistrarPosicion = new View.OnClickListener() {
 
@@ -200,7 +345,7 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
         //this.googlemap.setOnMapClickListener(onMapClick);
         // provLocal = ((EstablecimientoActivity) getActivity()).provLocal;
 
-        this.googlemap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        /*this.googlemap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng point) {
                 // TODO Auto-generated method stub
@@ -214,10 +359,10 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                 //markeroptions.snippet(provLocal.getDireccion());
                 googlemap.addMarker(markeroptions).showInfoWindow();
             }
-        });
+        });*/
 
 
-        this.googlemap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+        /*this.googlemap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
             @Override
             public void onMarkerDragStart(Marker marker) {
 
@@ -240,7 +385,7 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
 
                 new CargarDatos().execute();
             }
-        });
+        });*/
         googlemap.setMyLocationEnabled(true);
         googlemap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
@@ -274,7 +419,7 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
             @Override
             public boolean onMyLocationButtonClick() {
 
-                locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
+                /*locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
                 Criteria criteria = new Criteria();
 
                 boolean isGPSEnabled = locationmanager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -297,7 +442,9 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                     googlemap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12), 3000, null);
                     new CargarDatos().execute();
 
-                }
+                }*/
+                new CargarDatos().execute();
+
 
                 return false;
 
@@ -308,7 +455,7 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
 
 
 
-        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+        /*googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 if (marker.isDraggable() == false) {
@@ -330,14 +477,14 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                 }
             }
 
-        });
-        //LlenarMapa();
+        });*/
+        LlenarMapa();
 
         locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         String provider = locationmanager.getBestProvider(criteria, true);
         Location location = locationmanager.getLastKnownLocation(provider);
-        if (location != null) {
+        /*if (location != null) {
             latLng = new LatLng(location.getLatitude(), location.getLongitude());
             markeroptions = new MarkerOptions();
             markeroptions.position(latLng);
@@ -350,33 +497,33 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
             googlemap.addMarker(markeroptions).showInfoWindow();
 
 
-               /* MarkerOptions markeroptions = new MarkerOptions();
+                MarkerOptions markeroptions = new MarkerOptions();
                 markeroptions.position(latLng);
                 //markeroptions.title("Nuevo Establecimiento");
                 markeroptions.flat(true);
                 markeroptions.draggable(true);
                 //markeroptions.snippet("Direccci");
-                googlemap.addMarker(markeroptions).showInfoWindow();*/
+                googlemap.addMarker(markeroptions).showInfoWindow();
 
             googlemap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
 
-        } else {
-            latLng = new LatLng(-12.045039, -77.025409);
-            markeroptions = new MarkerOptions();
+        } else {*/
+        latLng = new LatLng(-12.045039, -77.025409);
+            /*markeroptions = new MarkerOptions();
             markeroptions.position(latLng);
             markeroptions.draggable(true);
             markeroptions.flat(true);
             markeroptions.title("Seleccione el Lugar de Construcción");
             //markeroptions.snippet(provLocal.getDireccion());
 
-            googlemap.addMarker(markeroptions).showInfoWindow();
-            googlemap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
+            googlemap.addMarker(markeroptions).showInfoWindow();*/
+        googlemap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
 
 
-            // Toast.makeText(getActivity(), "Error: No se pudo encontrar su Ubicación", Toast.LENGTH_SHORT).show();
-        }
+        // Toast.makeText(getActivity(), "Error: No se pudo encontrar su Ubicación", Toast.LENGTH_SHORT).show();
+        //}
 
-        new CargarDatos().execute();
+        //new CargarDatos().execute();
 
 
        /* for (int i = 0; i < lstEstablecimiento.size(); i++) {
@@ -424,15 +571,16 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                     markeroptions = new MarkerOptions();
                     LatLng latl = new LatLng(Double.parseDouble(lstEstablecimiento.get(i).getLatitud()), Double.parseDouble(lstEstablecimiento.get(i).getLongitud()));
                     markeroptions.position(latl);
-                    markeroptions.title(lstEstablecimiento.get(i).getNombreComercial());
+                    markeroptions.title(lstEstablecimiento.get(i).getNombres_Operario() + "\n" + lstEstablecimiento.get(i).getServicio());
+
                     markeroptions.flat(true);
                     markeroptions.draggable(false);
-                    markeroptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.establecimiento_icon));
-                    markeroptions.snippet(lstEstablecimiento.get(i).getDireccion());
+                    markeroptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ico_maestro));
+                    markeroptions.snippet(lstEstablecimiento.get(i).getDisponibilidad());
 
 
                     Marker m = googlemap.addMarker(markeroptions);
-                    eventMarkerMap.put(m, lstEstablecimiento.get(i).getIdEstablecimiento());
+                    eventMarkerMap.put(m, lstEstablecimiento.get(i).getIdEmpleado());
 
 
                 } catch (Exception ex) {
