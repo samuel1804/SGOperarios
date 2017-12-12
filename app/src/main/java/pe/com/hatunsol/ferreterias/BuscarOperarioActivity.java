@@ -1,12 +1,14 @@
 package pe.com.hatunsol.ferreterias;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.view.View;
@@ -80,7 +82,7 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
         llMenu = (LinearLayout) findViewById(R.id.llMenu);
         spFiltro = (MultiSelectionSpinner) findViewById(R.id.spFiltro);
         supportBarFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragMap);
-        //supportBarFragment.getMapAsync(BuscarOperarioActivity.this);
+
         //
         new CargarServicios().execute();
 
@@ -136,19 +138,27 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
     }
 
 
-
-
     @Override
     public void selectedStrings(List<String> strings) {
         Filtro = "";
 
+
+
         for (int i = 0; i < strings.size(); i++) {
-            if (i == 0) {
-                Filtro += lstServicio.get(i).getIdServicio();
-            } else {
-                Filtro += "," +lstServicio.get(i).getIdServicio();
-            }
+            for (int j = 0; j < lstServicio.size(); j++) {
+                if(lstServicio.get(j).getDesc_Serv().equals(strings.get(i))){
+
+                    if (Filtro.equals("")) {
+                        Filtro += lstServicio.get(j).getIdServicio();
+                    } else {
+                        Filtro += "," + lstServicio.get(j).getIdServicio();
+                    }
+                }
+
+
         }
+        }
+        googlemap.clear();
         new CargarDatos().execute();
     }
 
@@ -188,8 +198,8 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                     provloc.setDisponibilidad(jsonobj.getString("Disponibilidad"));
                     lstEstablecimiento.add(provloc);
                 }
-
-                supportBarFragment.getMapAsync(BuscarOperarioActivity.this);
+                LlenarMapa();
+                //supportBarFragment.getMapAsync(BuscarOperarioActivity.this);
                 //LlenarMapa();
                 //lstEstablecimiento = new Gson().fromJson(restResult, ListProveedorLocal.class);
                 //atEstablecimiento = (AutoCompleteTextView) findViewById(R.id.atEstablecimiento);
@@ -261,8 +271,8 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                 JSONObject jsonobj;
                 List<String> myResArrayList = new ArrayList<String>();
 
-                lstServicio.add(0, new BE_Servicio(0, "Seleccione"));
-                myResArrayList.add(0, "Todos");
+
+
                 for (int i = 0; i < jarray.length(); i++) {
                     jsonobj = jarray.getJSONObject(i);
                     provloc = new BE_Servicio();
@@ -270,9 +280,8 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                     provloc.setDesc_Serv(jsonobj.getString("Desc_Serv"));
 
                     lstServicio.add(provloc);
-                    myResArrayList.add(i+1, provloc.getDesc_Serv());
+                    myResArrayList.add(i, provloc.getDesc_Serv());
                 }
-
 
 
                 Spinner spinner = (Spinner) findViewById(R.id.spFiltro);
@@ -295,7 +304,7 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                 multiSelectionSpinner.setSelection(arra);
                 multiSelectionSpinner.setListener(BuscarOperarioActivity.this);
 
-                new CargarDatos().execute();
+                supportBarFragment.getMapAsync(BuscarOperarioActivity.this);
 
                 //supportBarFragment.getMapAsync(BuscarOperarioActivity.this);
                 //LlenarMapa();
@@ -342,10 +351,10 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
     public void onMapReady(final GoogleMap googleMap) {
 
         this.googlemap = googleMap;
-        //this.googlemap.setOnMapClickListener(onMapClick);
+
         // provLocal = ((EstablecimientoActivity) getActivity()).provLocal;
 
-        /*this.googlemap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        this.googlemap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng point) {
                 // TODO Auto-generated method stub
@@ -355,14 +364,12 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                 markeroptions.position(point);
                 markeroptions.draggable(true);
                 markeroptions.flat(true);
-                markeroptions.title("Seleccione el Lugar de Construcción");
+                markeroptions.title("Seleccione el Lugar de la Obra");
                 //markeroptions.snippet(provLocal.getDireccion());
                 googlemap.addMarker(markeroptions).showInfoWindow();
             }
-        });*/
-
-
-        /*this.googlemap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+        });
+        this.googlemap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
             @Override
             public void onMarkerDragStart(Marker marker) {
 
@@ -380,12 +387,22 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                 markeroptions.position(marker.getPosition());
                 markeroptions.draggable(true);
                 markeroptions.flat(true);
-                markeroptions.title("Seleccione el Lugar de Construcción");
+                markeroptions.title("Seleccione el Lugar de la Obra");
                 googlemap.addMarker(markeroptions).showInfoWindow();
 
                 new CargarDatos().execute();
             }
-        });*/
+        });
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         googlemap.setMyLocationEnabled(true);
         googlemap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
@@ -419,7 +436,7 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
             @Override
             public boolean onMyLocationButtonClick() {
 
-                /*locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
+                locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
                 Criteria criteria = new Criteria();
 
                 boolean isGPSEnabled = locationmanager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -442,7 +459,8 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                     googlemap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12), 3000, null);
                     new CargarDatos().execute();
 
-                }*/
+                }
+                googlemap.clear();
                 new CargarDatos().execute();
 
 
@@ -478,13 +496,13 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
             }
 
         });*/
-        LlenarMapa();
+
 
         locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         String provider = locationmanager.getBestProvider(criteria, true);
         Location location = locationmanager.getLastKnownLocation(provider);
-        /*if (location != null) {
+        if (location != null) {
             latLng = new LatLng(location.getLatitude(), location.getLongitude());
             markeroptions = new MarkerOptions();
             markeroptions.position(latLng);
@@ -507,23 +525,23 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
 
             googlemap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
 
-        } else {*/
-        latLng = new LatLng(-12.045039, -77.025409);
-            /*markeroptions = new MarkerOptions();
+        } else {
+            latLng = new LatLng(-12.045039, -77.025409);
+            markeroptions = new MarkerOptions();
             markeroptions.position(latLng);
             markeroptions.draggable(true);
             markeroptions.flat(true);
             markeroptions.title("Seleccione el Lugar de Construcción");
             //markeroptions.snippet(provLocal.getDireccion());
 
-            googlemap.addMarker(markeroptions).showInfoWindow();*/
-        googlemap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
-
+            googlemap.addMarker(markeroptions).showInfoWindow();
+            googlemap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
+        }
 
         // Toast.makeText(getActivity(), "Error: No se pudo encontrar su Ubicación", Toast.LENGTH_SHORT).show();
         //}
 
-        //new CargarDatos().execute();
+        new CargarDatos().execute();
 
 
        /* for (int i = 0; i < lstEstablecimiento.size(); i++) {
