@@ -237,7 +237,7 @@ public class ClientesMainActivity extends ActionBarActivity implements Confirmac
 
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(ClientesMainActivity.this, BuscarPresupuestoManoActivity.class);
+            Intent intent = new Intent(ClientesMainActivity.this, BuscarOperadorActivity.class);
             startActivity(intent);
 
            /* Intent intent = new Intent(ClientesMainActivity.this, BuscarObraActivity.class);

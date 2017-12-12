@@ -63,6 +63,15 @@
             android:label="@string/app_titulo"
             android:screenOrientation="portrait"></activity>
 
+        <activity
+            android:name="pe.com.hatunsol.ferreterias.BuscarOperadorActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:icon="@drawable/ic_launcher"
+            android:label="Operarios por Servicio"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".ClientesMainActivity"></activity>
+
+
 
         <activity
             android:name="pe.com.hatunsol.ferreterias.BuscarObraMOActivity"
@@ -229,11 +238,11 @@
             android:enabled="true"
             android:exported="true"></service>
 
-        <receiver android:name="pe.com.hatunsol.ferreterias.IniciadorServicio">
+      <!--  <receiver android:name="pe.com.hatunsol.ferreterias.IniciadorServicio">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"></action>
             </intent-filter>
-        </receiver>
+        </receiver>-->
 
 
     </application>

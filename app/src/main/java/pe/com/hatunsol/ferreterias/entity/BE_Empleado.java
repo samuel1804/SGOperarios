@@ -11,6 +11,43 @@ public class BE_Empleado {
     private String Latitud;
     private String Longitud;
     private String Disponibilidad;
+    private String Distrito;
+    private int Experiencia_Operario;
+    private String NumDocId_Operario;
+
+    public String getFoto() {
+        return Foto;
+    }
+
+    public void setFoto(String foto) {
+        Foto = foto;
+    }
+
+    private String Foto;
+
+    public String getNumDocId_Operario() {
+        return NumDocId_Operario;
+    }
+
+    public void setNumDocId_Operario(String numDocId_Operario) {
+        NumDocId_Operario = numDocId_Operario;
+    }
+
+    public int getExperiencia_Operario() {
+        return Experiencia_Operario;
+    }
+
+    public void setExperiencia_Operario(int experiencia_Operario) {
+        Experiencia_Operario = experiencia_Operario;
+    }
+
+    public String getDistrito() {
+        return Distrito;
+    }
+
+    public void setDistrito(String distrito) {
+        Distrito = distrito;
+    }
 
     public String getDisponibilidad() {
         return Disponibilidad;

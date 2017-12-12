@@ -216,6 +216,7 @@
     <orderEntry type="library" exported="" name="play-services-analytics-impl-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-gcm-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-appinvite-9.6.1" level="project" />
+    <orderEntry type="library" exported="" name="picasso-2.5.2" level="project" />
     <orderEntry type="library" exported="" name="play-services-plus-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="floatingactionbutton-1.8.0" level="project" />
     <orderEntry type="library" exported="" name="firebase-analytics-impl-9.6.1" level="project" />
