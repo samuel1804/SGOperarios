@@ -548,7 +548,35 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
         // Toast.makeText(getActivity(), "Error: No se pudo encontrar su Ubicación", Toast.LENGTH_SHORT).show();
         //}
 
-        new CargarDatos().execute();
+        locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        location = getLastKnownLocation();
+        boolean isGPSEnabled = locationmanager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if (!isGPSEnabled) {
+            AceptarDialogfragment confirmacionDialogfragment = new AceptarDialogfragment();
+            confirmacionDialogfragment.setMensaje("Por favor active su GPS");
+            confirmacionDialogfragment.setmConfirmacionDialogfragmentListener(BuscarOperarioActivity.this);
+            confirmacionDialogfragment.show(getSupportFragmentManager(), AceptarDialogfragment.TAG);
+
+        } else if (location == null) {
+            AceptarDialogfragment confirmacionDialogfragment = new AceptarDialogfragment();
+            confirmacionDialogfragment.setMensaje("No se encontró su Ubicación");
+            confirmacionDialogfragment.setmConfirmacionDialogfragmentListener(BuscarOperarioActivity.this);
+            confirmacionDialogfragment.show(getSupportFragmentManager(), AceptarDialogfragment.TAG);
+
+
+        } else {
+            googlemap.clear();
+
+            latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            markeroptions = new MarkerOptions();
+            markeroptions.position(latLng);
+            markeroptions.draggable(true);
+            markeroptions.flat(true);
+            markeroptions.title("Seleccione el Lugar de Búsqueda");
+            googlemap.addMarker(markeroptions).showInfoWindow();
+            googlemap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12), 3000, null);
+            new CargarDatos().execute();
+        }
 
 
        /* for (int i = 0; i < lstEstablecimiento.size(); i++) {

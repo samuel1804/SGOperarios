@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -29,8 +30,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import pe.com.hatunsol.ferreterias.BuscarOperadorActivity;
 import pe.com.hatunsol.ferreterias.BuscarProveedorActivity;
+import pe.com.hatunsol.ferreterias.ComentariosActivity;
 import pe.com.hatunsol.ferreterias.ConsultarCredito;
+import pe.com.hatunsol.ferreterias.ContactarActivity;
 import pe.com.hatunsol.ferreterias.DocumentosActivity;
 import pe.com.hatunsol.ferreterias.R;
 import pe.com.hatunsol.ferreterias.dialogframent.OpcionesDialogfragment;
@@ -73,6 +77,8 @@ public class MainAdapterListaOperador extends ArrayAdapter<BE_Empleado> implemen
             mainHolderProveedorLocal.tvTelefono = (TextView) convertView.findViewById(R.id.tvTelefono);
             mainHolderProveedorLocal.llFoto = (LinearLayout) convertView.findViewById(R.id.llFoto);
             mainHolderProveedorLocal.ivFoto = (ImageView) convertView.findViewById(R.id.ivFoto);
+            mainHolderProveedorLocal.btComentarios = (Button) convertView.findViewById(R.id.btComentarios);
+            mainHolderProveedorLocal.btContactar = (Button) convertView.findViewById(R.id.btContactar);
             convertView.setTag(mainHolderProveedorLocal);
         } else {
             mainHolderProveedorLocal = (MainHolderProveedorLocal) convertView.getTag();
@@ -87,6 +93,31 @@ public class MainAdapterListaOperador extends ArrayAdapter<BE_Empleado> implemen
             mainHolderProveedorLocal.tvExperiencia.setText(""+establecimiento.getExperiencia_Operario()+" Años");
             mainHolderProveedorLocal.tvDNI.setText(establecimiento.getNumDocId_Operario());
             mainHolderProveedorLocal.tvTelefono.setText(establecimiento.getTelefono_Operario());
+
+
+
+            mainHolderProveedorLocal.btComentarios.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(myContext, ComentariosActivity.class);
+                    intent.putExtra("IdEmpleado",establecimiento.getIdEmpleado());
+                    myContext.startActivity(intent);
+                }
+            });
+
+
+            mainHolderProveedorLocal.btContactar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(myContext, ContactarActivity.class);
+                    intent.putExtra("IdEmpleado", establecimiento.getIdEmpleado());
+                    intent.putExtra("Nombre", establecimiento.getNombres_Operario());
+                    intent.putExtra("Especialidad", establecimiento.getServicio());
+                    intent.putExtra("IdServicio", establecimiento.getIdServicio());
+                    intent.putExtra("Foto", establecimiento.getFoto());
+                    myContext.startActivity(intent);
+                }
+            });
 
 
             /*if(establecimiento.getSupervisor().length()>=26) {
@@ -385,6 +416,7 @@ public class MainAdapterListaOperador extends ArrayAdapter<BE_Empleado> implemen
         TextView tvNombre, tvEspecialidad, tvUbicacion, tvExperiencia, tvDNI,tvTelefono,tvPuntaje;
         LinearLayout llFoto;
         ImageView ivFoto;
+        Button btComentarios,btContactar;
 
     }
 

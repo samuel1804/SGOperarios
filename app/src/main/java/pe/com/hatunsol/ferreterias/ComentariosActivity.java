@@ -21,8 +21,6 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -35,11 +33,11 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import pe.com.hatunsol.ferreterias.adapter.MainAdapterListaEstablecimiento;
+import pe.com.hatunsol.ferreterias.adapter.MainAdapterListaComentario;
 import pe.com.hatunsol.ferreterias.adapter.MainAdapterListaOperador;
 import pe.com.hatunsol.ferreterias.dialogframent.AceptarDialogfragment;
 import pe.com.hatunsol.ferreterias.entity.BE_Empleado;
-import pe.com.hatunsol.ferreterias.entity.Establecimiento;
+import pe.com.hatunsol.ferreterias.entity.BE_Encuesta;
 import pe.com.hatunsol.ferreterias.entity.RestResult;
 import pe.com.hatunsol.ferreterias.rest.RestClient;
 import pe.com.hatunsol.ferreterias.utilitario.Base64;
@@ -49,14 +47,12 @@ import pe.com.hatunsol.ferreterias.utilitario.Util;
 /**
  * Created by Sistemas on 14/06/2016.
  */
-public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRefreshLayout.OnRefreshListener, AceptarDialogfragment.AceptarDialogfragmentListener {
-    private List<BE_Empleado> lsListadoEstablecimiento = null;
-    private MainAdapterListaOperador mMainAdapterListaEstablecimiento;
+public class ComentariosActivity extends ActionBarActivity implements SwipeRefreshLayout.OnRefreshListener, AceptarDialogfragment.AceptarDialogfragmentListener {
+    private List<BE_Encuesta> lsListadoEstablecimiento = null;
+    private MainAdapterListaComentario mMainAdapterListaEstablecimiento;
     private ListView lvProveedores;
-    // private FloatingActionButton fabNew;
+   // private FloatingActionButton fabNew;
     SwipeRefreshLayout mSwipeRefreshLayout;
-    private Button btnBuscar;
-    private EditText etBuscar;
     Uri selectedImageUri = null;
     public static final int REQUEST_CAMERA = 1;
     public static final int SELECT_FILE = 2;
@@ -71,7 +67,7 @@ public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.buscar_operador);
+        setContentView(R.layout.buscar_comentarios);
 
 
         lvProveedores = (ListView) findViewById(R.id.lvProveedores);
@@ -80,22 +76,12 @@ public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRe
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_main_swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.green);
-        etBuscar = (EditText) findViewById(R.id.etBuscar);
-        btnBuscar = (Button) findViewById(R.id.btnBuscar);
-
-        //rgFiltro = (RadioGroup) findViewById(R.id.rgFiltro);
-        spSupervisor = (Spinner) findViewById(R.id.spSupervisor);
-
-        //rgFiltro.setOnCheckedChangeListener(rgFiltroOnCheckedChangeListener);
-
-        btnBuscar.setOnClickListener(btnBuscarOnClickListener);
+        spSupervisor=(Spinner) findViewById(R.id.spSupervisor);
         if (lsListadoEstablecimiento == null) {
             onRefresh();
         } else {
             llenarListaProveedorLocal();
         }
-
-
     }
 
 
@@ -122,7 +108,7 @@ public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRe
     private void llenarListaProveedorLocal() {
         ImageLoader imgLoader = new ImageLoader(this);
         imgLoader.clearCache();
-        mMainAdapterListaEstablecimiento = new MainAdapterListaOperador(BuscarOperadorActivity.this, 0, lsListadoEstablecimiento);
+        mMainAdapterListaEstablecimiento = new MainAdapterListaComentario(ComentariosActivity.this, 0, lsListadoEstablecimiento);
         lvProveedores.setAdapter(mMainAdapterListaEstablecimiento);
         mMainAdapterListaEstablecimiento.notifyDataSetChanged();
 
@@ -186,7 +172,7 @@ public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRe
                         String str = Util.createDirectoryAndSaveFile(bitmap, "Hatunsol.jpg");
                         Util.galleryAddPic(str, getApplicationContext());
 
-                        dialog = ProgressDialog.show(BuscarOperadorActivity.this, "Subiendo",
+                        dialog = ProgressDialog.show(ComentariosActivity.this, "Subiendo",
                                 "Porfavor espere...", true);
                         new ImageGalleryTask().execute();
                     }
@@ -239,7 +225,7 @@ public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRe
 
 
             AceptarDialogfragment confirmacionDialogfragment = new AceptarDialogfragment();
-            confirmacionDialogfragment.setmConfirmacionDialogfragmentListener(BuscarOperadorActivity.this);
+            confirmacionDialogfragment.setmConfirmacionDialogfragmentListener(ComentariosActivity.this);
 
 
             try {
@@ -339,7 +325,7 @@ public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRe
             super.onPostExecute(restResult);
             try {
                 if (restResult.getResult() == "") {
-                    Toast.makeText(BuscarOperadorActivity.this, "No se encontraron Operarios", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ComentariosActivity.this, "No se encontraron Operarios", Toast.LENGTH_SHORT).show();
                     mSwipeRefreshLayout.setRefreshing(false);
                     return;
                 }
@@ -347,56 +333,16 @@ public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRe
 
                 JSONArray jsonarray = new JSONArray(restResult.getResult());
                 lsListadoEstablecimiento = new ArrayList<>();
-                BE_Empleado proveedorlocal;
+                BE_Encuesta proveedorlocal;
                 for (int i = 0; i < jsonarray.length(); i++) {
                     JSONObject jsonobj = jsonarray.getJSONObject(i);
-                    proveedorlocal = new BE_Empleado();
+                    proveedorlocal = new BE_Encuesta();
                   /*  proveedorlocal.setProveedorId(jsonobj.getInt("ProveedorId"));
                     proveedorlocal.setProveedorLocalId(jsonobj.getInt("ProveedorLocalId"));*/
-                    proveedorlocal.setIdEmpleado(jsonobj.getInt("IdEmpleado"));
-                    proveedorlocal.setNombres_Operario(jsonobj.getString("Nombres_Operario"));
-                    proveedorlocal.setTelefono_Operario(jsonobj.getString("Telefono_Operario"));
-                    proveedorlocal.setServicio(jsonobj.getString("Servicio"));
-                    proveedorlocal.setDistrito(jsonobj.getString("Distrito"));
-                    proveedorlocal.setExperiencia_Operario(jsonobj.getInt("Experiencia_Operario"));
-                    proveedorlocal.setNumDocId_Operario(jsonobj.getString("NumDocId_Operario"));
-
-
-                    if (!jsonobj.getString("Foto").equals("")) {
-
-
-                        /*URL url = new URL(jsonobj.getString("Foto"));
-                        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                        connection.setDoInput(true);
-                        connection.connect();
-                        InputStream input = connection.getInputStream();
-                        Bitmap myBitmap = BitmapFactory.decodeStream(input);*/
-
-
-                       /* InputStream stream = null;
-                        URL url = new URL(jsonobj.getString("Foto"));
-                        URLConnection connection = url.openConnection();
-                        HttpURLConnection httpConnection = (HttpURLConnection) connection;
-                        httpConnection.setRequestMethod("GET");
-                        httpConnection.connect();
-
-                        if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                            stream = httpConnection.getInputStream();
-                            Bitmap myBitmap = BitmapFactory.decodeStream(stream);
-                            proveedorlocal.setFoto(myBitmap);
-                        }*/
-
-                       /* URL urlConnection = new URL(jsonobj.getString("Foto"));
-                        HttpURLConnection connection = (HttpURLConnection) urlConnection
-                                .openConnection();
-                        connection.setDoInput(true);
-                        connection.connect();
-                        InputStream input = connection.getInputStream();
-                        Bitmap myBitmap = BitmapFactory.decodeStream(input);*/
-
-                        proveedorlocal.setFoto(jsonobj.getString("Foto"));
-
-                    }
+                    proveedorlocal.setIdEncuesta(jsonobj.getInt("IdEncuesta"));
+                    proveedorlocal.setFecha(jsonobj.getString("Fecha"));
+                    proveedorlocal.setComentario(jsonobj.getString("Comentario"));
+                    proveedorlocal.setNombre(jsonobj.getString("Nombre"));
 
                     lsListadoEstablecimiento.add((proveedorlocal));
                 }
@@ -428,7 +374,7 @@ public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRe
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Toast.makeText(BuscarOperadorActivity.this, "Cargando Operarios", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ComentariosActivity.this, "Cargando Operarios", Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -436,9 +382,9 @@ public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRe
             StringEntity stringEntity = null;
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
+            Bundle extras = getIntent().getExtras();
 
-
-            return new RestClient().get("WSEmpleado.svc/Listar?idservicio=" + 1, stringEntity, 30000);
+            return new RestClient().get("WSEncuesta.svc/Listar?idempleado=" + extras.getInt("IdEmpleado",0), stringEntity, 30000);
 
 
         }

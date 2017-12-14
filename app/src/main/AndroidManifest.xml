@@ -191,6 +191,17 @@
             android:parentActivityName=".ClientesMainActivity"
             android:screenOrientation="portrait"></activity>
 
+
+        <activity
+            android:name=".ComentariosActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:icon="@drawable/ic_launcher"
+            android:label="Comentarios"
+            android:launchMode="singleTask"
+            android:parentActivityName=".BuscarOperadorActivity"
+            android:screenOrientation="portrait"></activity>
+
+
         <activity
             android:name=".ConsultarCredito"
             android:configChanges="keyboardHidden|orientation|screenSize"
