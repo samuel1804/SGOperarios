@@ -14,6 +14,15 @@ public class BE_Empleado {
     private String Distrito;
     private int Experiencia_Operario;
     private String NumDocId_Operario;
+    private int IdServicio;
+
+    public int getIdServicio() {
+        return IdServicio;
+    }
+
+    public void setIdServicio(int idServicio) {
+        IdServicio = idServicio;
+    }
 
     public String getFoto() {
         return Foto;

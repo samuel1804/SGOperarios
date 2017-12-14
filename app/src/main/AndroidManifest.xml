@@ -102,6 +102,16 @@
             android:screenOrientation="portrait"></activity>
 
         <activity
+            android:name="pe.com.hatunsol.ferreterias.ContactarActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:icon="@drawable/ic_launcher"
+            android:label="Contactar Operario"
+            android:launchMode="singleTask"
+            android:parentActivityName=".BuscarOperarioActivity"
+            android:screenOrientation="portrait"></activity>
+
+
+        <activity
             android:name="pe.com.hatunsol.ferreterias.BuscarSolicitudActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:icon="@drawable/ic_launcher"

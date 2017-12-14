@@ -32,4 +32,9 @@ public class BE_Servicio {
 
     public BE_Servicio() {
     }
+
+    @Override
+    public String toString() {
+        return Desc_Serv;
+    }
 }

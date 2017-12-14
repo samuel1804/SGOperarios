@@ -67,7 +67,7 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
     private String Filtro = "";
     private MarkerOptions markeroptions;
     //  private Button btCotizar;
-    HashMap<Marker, Integer> eventMarkerMap = new HashMap<Marker, Integer>();
+    HashMap<Marker, BE_Empleado> eventMarkerMap = new HashMap<Marker, BE_Empleado>();
 
     LocationManager locationmanager;
     Location location;
@@ -143,10 +143,9 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
         Filtro = "";
 
 
-
         for (int i = 0; i < strings.size(); i++) {
             for (int j = 0; j < lstServicio.size(); j++) {
-                if(lstServicio.get(j).getDesc_Serv().equals(strings.get(i))){
+                if (lstServicio.get(j).getDesc_Serv().equals(strings.get(i))) {
 
                     if (Filtro.equals("")) {
                         Filtro += lstServicio.get(j).getIdServicio();
@@ -156,7 +155,7 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                 }
 
 
-        }
+            }
         }
         googlemap.clear();
         new CargarDatos().execute();
@@ -192,10 +191,12 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                     provloc = new BE_Empleado();
                     provloc.setIdEmpleado(jsonobj.getInt("IdEmpleado"));
                     provloc.setServicio(jsonobj.getString("Servicio"));
+                    provloc.setIdServicio(jsonobj.getInt("IdServicio"));
                     provloc.setNombres_Operario(jsonobj.getString("Nombres_Operario"));
                     provloc.setLatitud(jsonobj.getString("Latitud"));
                     provloc.setLongitud(jsonobj.getString("Longitud"));
                     provloc.setDisponibilidad(jsonobj.getString("Disponibilidad"));
+                    provloc.setFoto(jsonobj.getString("Foto"));
                     lstEstablecimiento.add(provloc);
                 }
                 LlenarMapa();
@@ -227,7 +228,8 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
             //Bundle extras = getActivity().getIntent().getExtras();
             //int ProveedorLocalId = extras.getInt("ProveedorLocalId");
             //markeroptions.getPosition().latitude + "&Longitud=" + markeroptions.getPosition().longitude
-            return new RestClient().get("WSEmpleado.svc/Listar?idservicio=" + Filtro, stringEntity, 30000);
+            location = getLastKnownLocation();
+            return new RestClient().get("WSEmpleado.svc/ListarCercanos?idservicio=" + Filtro+"&latitud="+location.getLatitude()+"&longitud="+location.getLongitude(), stringEntity, 30000);
 
         }
     }
@@ -270,7 +272,6 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                 lstServicio = new ArrayList<BE_Servicio>();
                 JSONObject jsonobj;
                 List<String> myResArrayList = new ArrayList<String>();
-
 
 
                 for (int i = 0; i < jarray.length(); i++) {
@@ -364,7 +365,7 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                 markeroptions.position(point);
                 markeroptions.draggable(true);
                 markeroptions.flat(true);
-                markeroptions.title("Seleccione el Lugar de la Obra");
+                markeroptions.title("Seleccione el Lugar de Búsqueda");
                 //markeroptions.snippet(provLocal.getDireccion());
                 googlemap.addMarker(markeroptions).showInfoWindow();
             }
@@ -387,7 +388,7 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                 markeroptions.position(marker.getPosition());
                 markeroptions.draggable(true);
                 markeroptions.flat(true);
-                markeroptions.title("Seleccione el Lugar de la Obra");
+                markeroptions.title("Seleccione el Lugar de Búsqueda");
                 googlemap.addMarker(markeroptions).showInfoWindow();
 
                 new CargarDatos().execute();
@@ -438,7 +439,7 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
 
                 locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
                 Criteria criteria = new Criteria();
-
+                location = getLastKnownLocation();
                 boolean isGPSEnabled = locationmanager.isProviderEnabled(LocationManager.GPS_PROVIDER);
                 if (!isGPSEnabled) {
                     AceptarDialogfragment confirmacionDialogfragment = new AceptarDialogfragment();
@@ -446,22 +447,27 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                     confirmacionDialogfragment.setmConfirmacionDialogfragmentListener(BuscarOperarioActivity.this);
                     confirmacionDialogfragment.show(getSupportFragmentManager(), AceptarDialogfragment.TAG);
 
+                } else if (location == null) {
+                    AceptarDialogfragment confirmacionDialogfragment = new AceptarDialogfragment();
+                    confirmacionDialogfragment.setMensaje("No se encontró su Ubicación");
+                    confirmacionDialogfragment.setmConfirmacionDialogfragmentListener(BuscarOperarioActivity.this);
+                    confirmacionDialogfragment.show(getSupportFragmentManager(), AceptarDialogfragment.TAG);
+
+
                 } else {
                     googlemap.clear();
-                    location = getLastKnownLocation();
+
                     latLng = new LatLng(location.getLatitude(), location.getLongitude());
                     markeroptions = new MarkerOptions();
                     markeroptions.position(latLng);
                     markeroptions.draggable(true);
                     markeroptions.flat(true);
-                    markeroptions.title("Seleccione el Lugar de Construcción");
+                    markeroptions.title("Seleccione el Lugar de Búsqueda");
                     googlemap.addMarker(markeroptions).showInfoWindow();
                     googlemap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12), 3000, null);
                     new CargarDatos().execute();
-
                 }
-                googlemap.clear();
-                new CargarDatos().execute();
+                //new CargarDatos().execute();
 
 
                 return false;
@@ -470,32 +476,33 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
         });
 
 
-
-
-
-        /*googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 if (marker.isDraggable() == false) {
-                    Intent intent = new Intent(BuscarOperarioActivity.this, PresupuestoFerreteriaActivity.class);
+                    Intent intent = new Intent(BuscarOperarioActivity.this, ContactarActivity.class);
                     Bundle extras = getIntent().getExtras();
 
                     // intent.putExtra("IdEstablecimiento", );
-                    Integer IdEstablecimiento = eventMarkerMap.get(marker);
-                    intent.putExtra("IdEstablecimiento", IdEstablecimiento);
-                    intent.putExtra("IdObra", extras.getInt("IdObra"));
+                    BE_Empleado obeEmpleado = eventMarkerMap.get(marker);
+                    intent.putExtra("IdEmpleado", obeEmpleado.getIdEmpleado());
+                    intent.putExtra("Nombre", obeEmpleado.getNombres_Operario());
+                    intent.putExtra("Especialidad", obeEmpleado.getServicio());
+                    intent.putExtra("IdServicio", obeEmpleado.getIdServicio());
+                    intent.putExtra("Foto", obeEmpleado.getFoto());
+                    /*intent.putExtra("IdObra", extras.getInt("IdObra"));
                     intent.putExtra("Nombre", extras.getString("Nombre"));
                     intent.putExtra("Area", extras.getDouble("Area"));
                     String Latitud = "" + markeroptions.getPosition().latitude;
                     intent.putExtra("Latitud", Latitud);
                     String Longitud = "" + markeroptions.getPosition().longitude;
-                    intent.putExtra("Longitud", Longitud);
+                    intent.putExtra("Longitud", Longitud);*/
 
                     startActivity(intent);
                 }
             }
 
-        });*/
+        });
 
 
         locationmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -508,20 +515,20 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
             markeroptions.position(latLng);
             markeroptions.draggable(true);
             markeroptions.flat(true);
-            markeroptions.title("Seleccione el Lugar de Construcción");
+            markeroptions.title("Seleccione el Lugar de Búsqueda");
             //markeroptions.snippet(provLocal.getDireccion());
 
 
             googlemap.addMarker(markeroptions).showInfoWindow();
 
 
-                MarkerOptions markeroptions = new MarkerOptions();
-                markeroptions.position(latLng);
-                //markeroptions.title("Nuevo Establecimiento");
-                markeroptions.flat(true);
-                markeroptions.draggable(true);
-                //markeroptions.snippet("Direccci");
-                googlemap.addMarker(markeroptions).showInfoWindow();
+            MarkerOptions markeroptions = new MarkerOptions();
+            markeroptions.position(latLng);
+            //markeroptions.title("Nuevo Establecimiento");
+            markeroptions.flat(true);
+            markeroptions.draggable(true);
+            //markeroptions.snippet("Direccci");
+            googlemap.addMarker(markeroptions).showInfoWindow();
 
             googlemap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
 
@@ -531,7 +538,7 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
             markeroptions.position(latLng);
             markeroptions.draggable(true);
             markeroptions.flat(true);
-            markeroptions.title("Seleccione el Lugar de Construcción");
+            markeroptions.title("Seleccione el Lugar de Búsqueda");
             //markeroptions.snippet(provLocal.getDireccion());
 
             googlemap.addMarker(markeroptions).showInfoWindow();
@@ -598,7 +605,10 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
 
 
                     Marker m = googlemap.addMarker(markeroptions);
-                    eventMarkerMap.put(m, lstEstablecimiento.get(i).getIdEmpleado());
+
+
+                    eventMarkerMap.put(m, lstEstablecimiento.get(i));
+
 
 
                 } catch (Exception ex) {
