@@ -76,6 +76,7 @@ public class MainAdapterListaOperador extends ArrayAdapter<BE_Empleado> implemen
             mainHolderProveedorLocal.tvDNI = (TextView) convertView.findViewById(R.id.tvDNI);
             mainHolderProveedorLocal.tvTelefono = (TextView) convertView.findViewById(R.id.tvTelefono);
             mainHolderProveedorLocal.llFoto = (LinearLayout) convertView.findViewById(R.id.llFoto);
+            mainHolderProveedorLocal.llPuntajes = (LinearLayout) convertView.findViewById(R.id.llPuntajes);
             mainHolderProveedorLocal.ivFoto = (ImageView) convertView.findViewById(R.id.ivFoto);
             mainHolderProveedorLocal.btComentarios = (Button) convertView.findViewById(R.id.btComentarios);
             mainHolderProveedorLocal.btContactar = (Button) convertView.findViewById(R.id.btContactar);
@@ -90,17 +91,16 @@ public class MainAdapterListaOperador extends ArrayAdapter<BE_Empleado> implemen
             mainHolderProveedorLocal.tvNombre.setText(establecimiento.getNombres_Operario());
             mainHolderProveedorLocal.tvEspecialidad.setText(establecimiento.getServicio());
             mainHolderProveedorLocal.tvUbicacion.setText(establecimiento.getDistrito());
-            mainHolderProveedorLocal.tvExperiencia.setText(""+establecimiento.getExperiencia_Operario()+" Años");
+            mainHolderProveedorLocal.tvExperiencia.setText("" + establecimiento.getExperiencia_Operario() + " Años");
             mainHolderProveedorLocal.tvDNI.setText(establecimiento.getNumDocId_Operario());
             mainHolderProveedorLocal.tvTelefono.setText(establecimiento.getTelefono_Operario());
-
 
 
             mainHolderProveedorLocal.btComentarios.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(myContext, ComentariosActivity.class);
-                    intent.putExtra("IdEmpleado",establecimiento.getIdEmpleado());
+                    intent.putExtra("IdEmpleado", establecimiento.getIdEmpleado());
                     myContext.startActivity(intent);
                 }
             });
@@ -133,7 +133,7 @@ public class MainAdapterListaOperador extends ArrayAdapter<BE_Empleado> implemen
             }
 
             mainHolderProveedorLocal.ProveedorLocalId = (TextView) convertView.findViewById(R.id.ProveedorLocalId);*/
-            if(establecimiento.getFoto()!=null){
+            if (establecimiento.getFoto() != null) {
                 Picasso.with(myContext)
                         .load(establecimiento.getFoto())
                         .placeholder(R.drawable.tomafoto)
@@ -141,11 +141,27 @@ public class MainAdapterListaOperador extends ArrayAdapter<BE_Empleado> implemen
             }/*else{
                 mainHolderProveedorLocal.ivFoto.setImageResource(R.drawable.tomafoto);
             }*/
+            //LinearLayout linearLayout = (LinearLayout) findViewById(R.id.llPuntaje);
+            mainHolderProveedorLocal.llPuntajes.removeAllViews();
+            View linearLayout;
+            for (int i = 0; i < establecimiento.getCriterios().size(); i++) {
+                linearLayout = null;
+                linearLayout = LayoutInflater.from(getContext()).inflate(R.layout.linearpuntaje, parent, false);
+                TextView tvNombre = (TextView) linearLayout.findViewById(R.id.tvNombre);
+                TextView tvPuntaje = (TextView) linearLayout.findViewById(R.id.tvPuntaje);
+                LinearLayout llRelleno = (LinearLayout) linearLayout.findViewById(R.id.llRelleno);
+                LinearLayout llVacio = (LinearLayout) linearLayout.findViewById(R.id.llVacio);
 
-
-
-
-
+                tvNombre.setText(establecimiento.getCriterios().get(i).getCriterio());
+                tvPuntaje.setText("" + establecimiento.getCriterios().get(i).getPuntaje());
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+                lp.weight = establecimiento.getCriterios().get(i).getPuntaje().floatValue();
+                llRelleno.setLayoutParams(lp);
+                LinearLayout.LayoutParams lp2 =  new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+                lp2.weight = 10 - establecimiento.getCriterios().get(i).getPuntaje().floatValue();
+                llVacio.setLayoutParams(lp2);
+                mainHolderProveedorLocal.llPuntajes.addView(linearLayout);
+            }
 
         } else {
             mainHolderProveedorLocal.tvNombre.setText("");
@@ -164,15 +180,15 @@ public class MainAdapterListaOperador extends ArrayAdapter<BE_Empleado> implemen
     }
 
 
-  /*  @Override
-    public void onModificar(int ExpedienteCreditoId,int ProcesoId) {
-        ActionBarActivity mycontext = (ActionBarActivity) myContext;
-       /* Intent intent = new Intent(getContext(), ContactoActivity.class);
-        intent.putExtra("ExpedienteCreditoId", ExpedienteCreditoId);
-        intent.putExtra("cod_operacion", 2);
-        mycontext.startActivity(intent);
-    }
-*/
+    /*  @Override
+      public void onModificar(int ExpedienteCreditoId,int ProcesoId) {
+          ActionBarActivity mycontext = (ActionBarActivity) myContext;
+         /* Intent intent = new Intent(getContext(), ContactoActivity.class);
+          intent.putExtra("ExpedienteCreditoId", ExpedienteCreditoId);
+          intent.putExtra("cod_operacion", 2);
+          mycontext.startActivity(intent);
+      }
+  */
     @Override
     public void onModificar(int IdSolicitud) {
 
@@ -244,13 +260,13 @@ public class MainAdapterListaOperador extends ArrayAdapter<BE_Empleado> implemen
         if (Ruta == null) {
             listItems.add("Tomar Foto");
             listItems.add("Imagen de Galería");
-            items =listItems.toArray(new CharSequence[listItems.size()]);
+            items = listItems.toArray(new CharSequence[listItems.size()]);
             builder.setItems(items, new DialogInterface.OnClickListener() {
                 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
                 @Override
                 public void onClick(DialogInterface dialog, int item) {
 
-                 if (items[item].equals("Tomar Foto")) {
+                    if (items[item].equals("Tomar Foto")) {
                         String fileName = "Hatunsol.jpg";
                         //create parameters for Intent with filename
                         ContentValues values = new ContentValues();
@@ -281,7 +297,7 @@ public class MainAdapterListaOperador extends ArrayAdapter<BE_Empleado> implemen
             listItems.add("Tomar Foto");
             listItems.add("Imagen de Galería");
             listItems.add("Quitar Foto");
-            items =listItems.toArray(new CharSequence[listItems.size()]);
+            items = listItems.toArray(new CharSequence[listItems.size()]);
             builder.setItems(items, new DialogInterface.OnClickListener() {
                 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
                 @Override
@@ -319,8 +335,6 @@ public class MainAdapterListaOperador extends ArrayAdapter<BE_Empleado> implemen
                 }
             });
         }
-
-
 
 
         builder.show();
@@ -413,10 +427,10 @@ public class MainAdapterListaOperador extends ArrayAdapter<BE_Empleado> implemen
     }
 
     static class MainHolderProveedorLocal {
-        TextView tvNombre, tvEspecialidad, tvUbicacion, tvExperiencia, tvDNI,tvTelefono,tvPuntaje;
-        LinearLayout llFoto;
+        TextView tvNombre, tvEspecialidad, tvUbicacion, tvExperiencia, tvDNI, tvTelefono, tvPuntaje;
+        LinearLayout llFoto, llPuntajes;
         ImageView ivFoto;
-        Button btComentarios,btContactar;
+        Button btComentarios, btContactar;
 
     }
 

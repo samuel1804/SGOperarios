@@ -228,7 +228,9 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
             //Bundle extras = getActivity().getIntent().getExtras();
             //int ProveedorLocalId = extras.getInt("ProveedorLocalId");
             //markeroptions.getPosition().latitude + "&Longitud=" + markeroptions.getPosition().longitude
-            location = getLastKnownLocation();
+            location=new Location("");
+            location.setLongitude(markeroptions.getPosition().longitude);
+            location.setLatitude(markeroptions.getPosition().latitude);
             return new RestClient().get("WSEmpleado.svc/ListarCercanos?idservicio=" + Filtro+"&latitud="+location.getLatitude()+"&longitud="+location.getLongitude(), stringEntity, 30000);
 
         }

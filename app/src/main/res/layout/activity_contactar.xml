@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:scrollbars="vertical">
 
 
     <LinearLayout
@@ -97,7 +98,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
-            android:lines="8"
+            android:lines="4"
             android:text="Buenos Días por favor contactarse conmigo para el trabajo de..."
             android:gravity="left"/>
 
@@ -109,6 +110,7 @@
         android:layout_height="wrap_content"
         android:text="Contactar"
         android:textColor="@color/white"
-        android:background="@drawable/btn_blue"/>
+        android:background="@drawable/btn_blue"
+        />
 
 </LinearLayout>

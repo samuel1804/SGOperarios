@@ -97,25 +97,27 @@
 
                 <TextView
                     android:id="@+id/tvEspecialidad"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Gasfitero" />
 
+            </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
                     android:text="Ubicación: "
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvUbicacion"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
 
                     android:text="Villa El Salvador" />
-
 
             </LinearLayout>
 
@@ -193,51 +195,13 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/llPuntajes"
                     android:layout_width="0dp"
                     android:layout_weight="3"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <LinearLayout
 
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/border"
-                            >
-                            <LinearLayout
-                                android:id="@+id/llAcabados"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="5.0"
-                                android:padding="2dp"
-                                android:background="@color/wallet_holo_blue_light"
-                                android:orientation="horizontal">
-                                <TextView
-
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Acabados"
-                                    android:textSize="10sp"
-                                    android:textColor="@color/white"
-                                    android:textStyle="bold"/>
-                            </LinearLayout>
-                            <LinearLayout
-                                android:orientation="horizontal"
-                                android:id="@+id/llAcabadosBlank"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="5.0"></LinearLayout>
-                        </LinearLayout>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="5.0"/>
-                    </LinearLayout>
-                    <LinearLayout
+                   <!-- <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
@@ -356,7 +320,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="5.0"/>
-                    </LinearLayout>
+                    </LinearLayout>-->
                 </LinearLayout>
 
             </LinearLayout>

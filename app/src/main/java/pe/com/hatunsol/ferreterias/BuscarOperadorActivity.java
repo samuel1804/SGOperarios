@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.guna.libmultispinner.MultiSelectionSpinner;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.entity.StringEntity;
@@ -38,7 +39,10 @@ import java.util.List;
 import pe.com.hatunsol.ferreterias.adapter.MainAdapterListaEstablecimiento;
 import pe.com.hatunsol.ferreterias.adapter.MainAdapterListaOperador;
 import pe.com.hatunsol.ferreterias.dialogframent.AceptarDialogfragment;
+import pe.com.hatunsol.ferreterias.dialogframent.ProgressDialogFragment;
 import pe.com.hatunsol.ferreterias.entity.BE_Empleado;
+import pe.com.hatunsol.ferreterias.entity.BE_EncuestaRepuesta;
+import pe.com.hatunsol.ferreterias.entity.BE_Servicio;
 import pe.com.hatunsol.ferreterias.entity.Establecimiento;
 import pe.com.hatunsol.ferreterias.entity.RestResult;
 import pe.com.hatunsol.ferreterias.rest.RestClient;
@@ -49,24 +53,24 @@ import pe.com.hatunsol.ferreterias.utilitario.Util;
 /**
  * Created by Sistemas on 14/06/2016.
  */
-public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRefreshLayout.OnRefreshListener, AceptarDialogfragment.AceptarDialogfragmentListener {
+public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRefreshLayout.OnRefreshListener, AceptarDialogfragment.AceptarDialogfragmentListener, MultiSelectionSpinner.OnMultipleItemsSelectedListener {
     private List<BE_Empleado> lsListadoEstablecimiento = null;
     private MainAdapterListaOperador mMainAdapterListaEstablecimiento;
     private ListView lvProveedores;
     // private FloatingActionButton fabNew;
     SwipeRefreshLayout mSwipeRefreshLayout;
-    private Button btnBuscar;
-    private EditText etBuscar;
+    private ProgressDialogFragment mProgressDialogFragment;
     Uri selectedImageUri = null;
     public static final int REQUEST_CAMERA = 1;
     public static final int SELECT_FILE = 2;
     Bitmap bitmap;
     private ProgressDialog dialog;
     public int ProveedorLocaId = 0;
+    private List<BE_Servicio> lstServicio;
     public Uri imageUri;
     //private RadioGroup rgFiltro;
-    private int Filtro = 1;
-    private Spinner spSupervisor;
+    private String Filtro = "";
+    private MultiSelectionSpinner spFiltro;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,24 +84,144 @@ public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRe
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_main_swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.green);
-        etBuscar = (EditText) findViewById(R.id.etBuscar);
-        btnBuscar = (Button) findViewById(R.id.btnBuscar);
+
 
         //rgFiltro = (RadioGroup) findViewById(R.id.rgFiltro);
-        spSupervisor = (Spinner) findViewById(R.id.spSupervisor);
+        spFiltro = (MultiSelectionSpinner) findViewById(R.id.spFiltro);
 
         //rgFiltro.setOnCheckedChangeListener(rgFiltroOnCheckedChangeListener);
 
-        btnBuscar.setOnClickListener(btnBuscarOnClickListener);
-        if (lsListadoEstablecimiento == null) {
+        new CargarServicios().execute();
+
+
+      /*  if (lsListadoEstablecimiento == null) {
             onRefresh();
         } else {
             llenarListaProveedorLocal();
-        }
+        }*/
 
 
     }
 
+    @Override
+    public void selectedIndices(List<Integer> indices) {
+
+    }
+
+    @Override
+    public void selectedStrings(List<String> strings) {
+        Filtro = "";
+
+
+        for (int i = 0; i < strings.size(); i++) {
+            for (int j = 0; j < lstServicio.size(); j++) {
+                if (lstServicio.get(j).getDesc_Serv().equals(strings.get(i))) {
+
+                    if (Filtro.equals("")) {
+                        Filtro += lstServicio.get(j).getIdServicio();
+                    } else {
+                        Filtro += "," + lstServicio.get(j).getIdServicio();
+                    }
+                }
+
+
+            }
+        }
+        new BuscarProveedorAsyncTask().execute();
+    }
+
+    public class CargarServicios extends AsyncTask<Void, Void, RestResult> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            if (mProgressDialogFragment == null) {
+                mProgressDialogFragment = new ProgressDialogFragment();
+                mProgressDialogFragment.setMensaje("Cargando..");
+                mProgressDialogFragment.show(BuscarOperadorActivity.this.getFragmentManager(), ProgressDialogFragment.TAG);
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(RestResult restResult) {
+            super.onPostExecute(restResult);
+            mProgressDialogFragment.dismissAllowingStateLoss();
+
+            try {
+
+                JSONArray jarray = new JSONArray(restResult.getResult());
+                BE_Servicio provloc = new BE_Servicio();
+                lstServicio = new ArrayList<BE_Servicio>();
+                JSONObject jsonobj;
+                List<String> myResArrayList = new ArrayList<String>();
+
+
+                for (int i = 0; i < jarray.length(); i++) {
+                    jsonobj = jarray.getJSONObject(i);
+                    provloc = new BE_Servicio();
+                    provloc.setIdServicio(jsonobj.getInt("IdServicio"));
+                    provloc.setDesc_Serv(jsonobj.getString("Desc_Serv"));
+
+                    lstServicio.add(provloc);
+                    myResArrayList.add(i, provloc.getDesc_Serv());
+                }
+
+
+                Spinner spinner = (Spinner) findViewById(R.id.spFiltro);
+
+
+                MultiSelectionSpinner multiSelectionSpinner = (MultiSelectionSpinner) findViewById(R.id.spFiltro);
+                multiSelectionSpinner.setItems(myResArrayList);
+
+
+                int[] arra = new int[jarray.length()];
+                for (int i = 0; i < jarray.length(); i++) {
+                    arra[i] = i;
+                    if (i == 0) {
+                        Filtro += lstServicio.get(i).getIdServicio();
+                    } else {
+                        Filtro += "," + lstServicio.get(i).getIdServicio();
+                    }
+
+                }
+                multiSelectionSpinner.setSelection(arra);
+                multiSelectionSpinner.setListener(BuscarOperadorActivity.this);
+
+                //supportBarFragment.getMapAsync(BuscarOperadorActivity.this);
+
+                //supportBarFragment.getMapAsync(BuscarOperarioActivity.this);
+                //LlenarMapa();
+                //lstEstablecimiento = new Gson().fromJson(restResult, ListProveedorLocal.class);
+                //atEstablecimiento = (AutoCompleteTextView) findViewById(R.id.atEstablecimiento);
+
+                /*ArrayAdapter<Establecimiento> dataAdapter = new ArrayAdapter<Establecimiento>
+                        (getActivity(), android.R.layout.simple_spinner_item, lstEstablecimiento);*/
+
+
+
+               /* atEstablecimiento.setThreshold(1);
+                atEstablecimiento.setAdapter(dataAdapter);
+
+                atEstablecimiento.setOnItemClickListener(atEstablecimientosOnItemClickListener);*/
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+
+        @Override
+        protected RestResult doInBackground(Void... params) {
+            StringEntity stringEntity = null;
+            //Bundle extras = getActivity().getIntent().getExtras();
+            //int ProveedorLocalId = extras.getInt("ProveedorLocalId");
+            //markeroptions.getPosition().latitude + "&Longitud=" + markeroptions.getPosition().longitude
+            return new RestClient().get("WSServicio.svc/Listar", stringEntity, 30000);
+
+        }
+    }
 
 
     View.OnClickListener btnBuscarOnClickListener = new View.OnClickListener() {
@@ -316,21 +440,6 @@ public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRe
     }
 
 
-    RadioGroup.OnCheckedChangeListener rgFiltroOnCheckedChangeListener = new RadioGroup.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(RadioGroup group, int checkedId) {
-            if (checkedId == R.id.rbTodos) {
-                Filtro = 3;
-            } else if (checkedId == R.id.rbActivos) {
-                Filtro = 1;
-            } else if (checkedId == R.id.rbInactivos) {
-
-                Filtro = 2;
-            }
-            onRefresh();
-        }
-    };
-
     class BuscarProveedorAsyncTask extends AsyncTask<Void, Void, RestResult> {
 
 
@@ -357,10 +466,21 @@ public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRe
                     proveedorlocal.setNombres_Operario(jsonobj.getString("Nombres_Operario"));
                     proveedorlocal.setTelefono_Operario(jsonobj.getString("Telefono_Operario"));
                     proveedorlocal.setServicio(jsonobj.getString("Servicio"));
+                    proveedorlocal.setIdServicio(jsonobj.getInt("IdServicio"));
                     proveedorlocal.setDistrito(jsonobj.getString("Distrito"));
                     proveedorlocal.setExperiencia_Operario(jsonobj.getInt("Experiencia_Operario"));
                     proveedorlocal.setNumDocId_Operario(jsonobj.getString("NumDocId_Operario"));
 
+                    JSONArray criterios = jsonobj.getJSONArray("Criterios");
+                    List<BE_EncuestaRepuesta> lista = new ArrayList<>();
+                    for (int j = 0; j < criterios.length(); j++) {
+                        JSONObject jsoncriterio = criterios.getJSONObject(j);
+                        BE_EncuestaRepuesta crite = new BE_EncuestaRepuesta();
+                        crite.setCriterio(jsoncriterio.getString("Criterio"));
+                        crite.setPuntaje(jsoncriterio.getDouble("Puntaje"));
+                        lista.add(crite);
+                    }
+                    proveedorlocal.setCriterios(lista);
 
                     if (!jsonobj.getString("Foto").equals("")) {
 
@@ -438,7 +558,7 @@ public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRe
             StrictMode.setThreadPolicy(policy);
 
 
-            return new RestClient().get("WSEmpleado.svc/Listar?idservicio=" + 1, stringEntity, 30000);
+            return new RestClient().get("WSEmpleado.svc/Listar?idservicio=" + Filtro, stringEntity, 30000);
 
 
         }

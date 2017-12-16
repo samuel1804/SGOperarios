@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/llPuntaje"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal">
+<LinearLayout
+
+    android:layout_width="0dp"
+    android:layout_weight="1"
+    android:layout_height="wrap_content"
+    android:background="@drawable/border"
+    >
+    <LinearLayout
+        android:id="@+id/llRelleno"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="6.5"
+        android:padding="2dp"
+        android:background="@color/wallet_holo_blue_light"
+        android:orientation="horizontal">
+
+
+        <TextView
+android:id="@+id/tvNombre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Acabados"
+            android:textSize="10sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"/>
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:id="@+id/llVacio"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3.5"></LinearLayout>
+</LinearLayout>
+<TextView
+    android:id="@+id/tvPuntaje"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="5.0"/>
+</LinearLayout>

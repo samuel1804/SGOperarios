@@ -374,7 +374,7 @@ public class ComentariosActivity extends ActionBarActivity implements SwipeRefre
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Toast.makeText(ComentariosActivity.this, "Cargando Operarios", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ComentariosActivity.this, "Cargando Comentarios", Toast.LENGTH_SHORT).show();
         }
 
         @Override

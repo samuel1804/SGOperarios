@@ -39,7 +39,7 @@ public class Util {
     //public static String Direccion_WCF = "http://www.hatunsol.com.pe/hatunsolWS/";
     //public static String Direccion_WCF = "http://www.hatunsol.com.pe/ws_hatun_desarrollo/";
     //public static String Direccion_WCF = "http://192.168.1.62:5371/";
-    public static String Direccion_WCF = "http://192.168.1.166:9021/";
+    public static String Direccion_WCF = "http://192.168.1.11:9021/";
 
 
     //Mensajes

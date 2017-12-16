@@ -1,5 +1,7 @@
 package pe.com.hatunsol.ferreterias.entity;
 
+import java.util.List;
+
 /**
  * Created by Samuel on 2/12/2017.
  */
@@ -15,6 +17,15 @@ public class BE_Empleado {
     private int Experiencia_Operario;
     private String NumDocId_Operario;
     private int IdServicio;
+    private List<BE_EncuestaRepuesta> Criterios;
+
+    public List<BE_EncuestaRepuesta> getCriterios() {
+        return Criterios;
+    }
+
+    public void setCriterios(List<BE_EncuestaRepuesta> criterios) {
+        Criterios = criterios;
+    }
 
     public int getIdServicio() {
         return IdServicio;
