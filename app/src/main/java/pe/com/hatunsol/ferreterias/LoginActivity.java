@@ -16,6 +16,10 @@ import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.CharacterCodingException;
+import java.security.NoSuchAlgorithmException;
+
 import pe.com.hatunsol.ferreterias.dialogframent.ConfirmacionDialogfragment;
 import pe.com.hatunsol.ferreterias.dialogframent.ProgressDialogFragment;
 import pe.com.hatunsol.ferreterias.entity.BE_Constantes;
@@ -94,12 +98,9 @@ public class LoginActivity extends ActionBarActivity implements AceptarDialogfra
         @Override
         public void onClick(View v) {
 
-            Intent intent = new Intent(LoginActivity.this, ClientesMainActivity.class);
-            startActivity(intent);
 
 
-
-        /*    if (!Util.isOnline(LoginActivity.this)) {
+           if (!Util.isOnline(LoginActivity.this)) {
                 AceptarDialogfragment confirmacionDialogfragment = new AceptarDialogfragment();
                 confirmacionDialogfragment.setMensaje("Verifique que su dispositivo tiene Conexión a Internet.");
                 confirmacionDialogfragment.setmConfirmacionDialogfragmentListener(LoginActivity.this);
@@ -118,7 +119,7 @@ public class LoginActivity extends ActionBarActivity implements AceptarDialogfra
 
 
                 new VerificarLoginAsyncTask().execute();
-            }*/
+            }
 
 
         }
@@ -139,29 +140,29 @@ public class LoginActivity extends ActionBarActivity implements AceptarDialogfra
             try {
 
 
-                if (restResult.getResult() == "") {
+                if (restResult.getResult().equals("")) {
                     Toast.makeText(LoginActivity.this, "El Usuario no Existe", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 JSONObject jsonobj = new JSONObject(restResult.getResult());
                 Usuario usuario = new Usuario();
-                usuario.setUserId(jsonobj.getInt("UserId"));
-                usuario.setUserLogin(jsonobj.getString("UserLogin"));
-                usuario.setUserPassword(jsonobj.getString("UserPassword"));
-                usuario.setEmpleadoId(jsonobj.getInt("EmpleadoId"));
 
-
-                Rol rol=new Rol();
+                usuario.setUserLogin(jsonobj.getString("Login"));
+                usuario.setUserPassword(jsonobj.getString("Password"));
+                usuario.setEmpleadoId(jsonobj.getInt("IdEmpleado"));
+                usuario.setActive(jsonobj.getBoolean("Activo"));
+                usuario.setUserId(jsonobj.getInt("IdUser"));
+                /*Rol rol=new Rol();
                 rol.setRolId(jsonobj.getJSONObject("Rol").getInt("RolId"));
                 rol.setRolDes(jsonobj.getJSONObject("Rol").getString("RolDes"));
                 usuario.setRol(rol);
-                usuario.setActive(jsonobj.getBoolean("IsActive"));
+                usuario.setActive(jsonobj.getBoolean("IsActive"));*/
 
 
                                 //String strPassword = Util.EncriptarPassword(etContrasenia.getText().toString());
                 if (usuario.getUserId() == 0) {
                     Toast.makeText(LoginActivity.this, "Usuario o Contraseña Incorrectos", Toast.LENGTH_SHORT).show();
-                } else if (usuario.getUserPassword().equals(etContrasenia.getText().toString())) {
+                } else if (usuario.getUserPassword().equals(Util.EncriptarPassword(etContrasenia.getText().toString()))) {
                     Util.BE_DatosUsuario = usuario;
 
                     SharedPreferences sp = getSharedPreferences(getPackageName(), MODE_PRIVATE);
@@ -193,10 +194,10 @@ public class LoginActivity extends ActionBarActivity implements AceptarDialogfra
                     /*Intent intentUS = new Intent(LoginActivity.this, UbicacionService.class);
                     startService(intentUS);*/
 
-                   if (usuario.getRol().getRolId() == BE_Constantes.TipoUsuarios.Cliente) {
+
                         Intent intent = new Intent(LoginActivity.this, ClientesMainActivity.class);
                         startActivity(intent);
-                    }
+
 
 
                     finish();
@@ -208,6 +209,12 @@ public class LoginActivity extends ActionBarActivity implements AceptarDialogfra
                 }
 
             } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (CharacterCodingException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
 
@@ -230,10 +237,8 @@ public class LoginActivity extends ActionBarActivity implements AceptarDialogfra
                 user = etUsuario.getText().toString().substring(1, etUsuario.getText().length());
             } else {
                 user = etUsuario.getText().toString();
-
-
             }
-            return new RestClient().get("UserWS.svc/Usuario/" + user, stringEntity, 30000);
+            return new RestClient().get("WSUser.svc/Obtener?Login=" + user, stringEntity, 30000);
 
 
         }

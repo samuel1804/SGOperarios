@@ -140,6 +140,9 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
 
     @Override
     public void selectedStrings(List<String> strings) {
+
+
+
         Filtro = "";
 
 
@@ -157,8 +160,17 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
 
             }
         }
+
         googlemap.clear();
         new CargarDatos().execute();
+        markeroptions = new MarkerOptions();
+        markeroptions.position(latLng);
+        markeroptions.draggable(true);
+        markeroptions.flat(true);
+        markeroptions.title("Seleccione el Lugar de Búsqueda");
+        //markeroptions.snippet(provLocal.getDireccion());
+        googlemap.addMarker(markeroptions).showInfoWindow();
+
     }
 
 
@@ -228,10 +240,11 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
             //Bundle extras = getActivity().getIntent().getExtras();
             //int ProveedorLocalId = extras.getInt("ProveedorLocalId");
             //markeroptions.getPosition().latitude + "&Longitud=" + markeroptions.getPosition().longitude
-            location=new Location("");
+            /*location=new Location("");
             location.setLongitude(markeroptions.getPosition().longitude);
             location.setLatitude(markeroptions.getPosition().latitude);
-            return new RestClient().get("WSEmpleado.svc/ListarCercanos?idservicio=" + Filtro+"&latitud="+location.getLatitude()+"&longitud="+location.getLongitude(), stringEntity, 30000);
+            latLng=location.get*/
+            return new RestClient().get("WSEmpleado.svc/ListarCercanos?idservicio=" + Filtro+"&latitud="+latLng.latitude+"&longitud="+latLng.longitude, stringEntity, 30000);
 
         }
     }
@@ -368,6 +381,7 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                 markeroptions.draggable(true);
                 markeroptions.flat(true);
                 markeroptions.title("Seleccione el Lugar de Búsqueda");
+                latLng=markeroptions.getPosition();
                 //markeroptions.snippet(provLocal.getDireccion());
                 googlemap.addMarker(markeroptions).showInfoWindow();
             }
@@ -392,7 +406,7 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
                 markeroptions.flat(true);
                 markeroptions.title("Seleccione el Lugar de Búsqueda");
                 googlemap.addMarker(markeroptions).showInfoWindow();
-
+                latLng=marker.getPosition();
                 new CargarDatos().execute();
             }
         });
@@ -451,7 +465,7 @@ public class BuscarOperarioActivity extends ActionBarActivity implements OnMapRe
 
                 } else if (location == null) {
                     AceptarDialogfragment confirmacionDialogfragment = new AceptarDialogfragment();
-                    confirmacionDialogfragment.setMensaje("No se encontró su Ubicación");
+                    confirmacionDialogfragment.setMensaje("No se encontró su Ubicación, verifique la configuración de su GPS");
                     confirmacionDialogfragment.setmConfirmacionDialogfragmentListener(BuscarOperarioActivity.this);
                     confirmacionDialogfragment.show(getSupportFragmentManager(), AceptarDialogfragment.TAG);
 

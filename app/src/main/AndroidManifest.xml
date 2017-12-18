@@ -67,6 +67,7 @@
             android:name="pe.com.hatunsol.ferreterias.BuscarOperadorActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:icon="@drawable/ic_launcher"
+            android:launchMode="singleTask"
             android:label="Operarios por Servicio"
             android:screenOrientation="portrait"
             android:parentActivityName=".ClientesMainActivity"></activity>
