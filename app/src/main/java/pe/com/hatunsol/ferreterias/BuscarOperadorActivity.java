@@ -470,6 +470,7 @@ public class BuscarOperadorActivity extends ActionBarActivity implements SwipeRe
                     proveedorlocal.setDistrito(jsonobj.getString("Distrito"));
                     proveedorlocal.setExperiencia_Operario(jsonobj.getInt("Experiencia_Operario"));
                     proveedorlocal.setNumDocId_Operario(jsonobj.getString("NumDocId_Operario"));
+                    proveedorlocal.setPuntaje(jsonobj.getDouble("Puntaje"));
 
                     JSONArray criterios = jsonobj.getJSONArray("Criterios");
                     List<BE_EncuestaRepuesta> lista = new ArrayList<>();

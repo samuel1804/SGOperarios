@@ -18,6 +18,15 @@ public class BE_Empleado {
     private String NumDocId_Operario;
     private int IdServicio;
     private List<BE_EncuestaRepuesta> Criterios;
+    private double Puntaje;
+
+    public double getPuntaje() {
+        return Puntaje;
+    }
+
+    public void setPuntaje(double puntaje) {
+        Puntaje = puntaje;
+    }
 
     public List<BE_EncuestaRepuesta> getCriterios() {
         return Criterios;
