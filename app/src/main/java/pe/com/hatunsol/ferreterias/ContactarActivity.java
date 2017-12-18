@@ -320,9 +320,9 @@ public class ContactarActivity extends ActionBarActivity implements AceptarDialo
                 Bundle extras = getIntent().getExtras();
                 //Enviar en Vacio los Campos que no siempre se llenan (solo titular o Prospecto)
                 //jsonObject.put("IdCliente", BE_DatosUsuario.getEmpleadoId());
-                jsonObject.put("IdCliente", 1);
-                jsonObject.put("IdEmpleado", 1);
-                jsonObject.put("UserIdCrea", 1);
+                jsonObject.put("IdCliente", BE_DatosUsuario.getEmpleadoId());
+                jsonObject.put("IdEmpleado", extras.getInt("IdEmpleado",0));
+                jsonObject.put("UserIdCrea", BE_DatosUsuario.getUserId());
                 jsonObject.put("IdTarea", ((BE_Tarea) spServicio.getSelectedItem()).getIdTarea());
                 jsonObject.put("Tarea", ((BE_Tarea) spServicio.getSelectedItem()).getNombre_Tarea());
                 jsonObject.put("Texto", etTexto.getText());
