@@ -190,7 +190,7 @@
                         android:id="@+id/tvPuntaje"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="9.8"
+
                         android:textSize="22sp"/>
                 </LinearLayout>
 

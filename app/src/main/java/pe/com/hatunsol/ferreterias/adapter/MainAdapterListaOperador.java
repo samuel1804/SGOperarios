@@ -77,6 +77,7 @@ public class MainAdapterListaOperador extends ArrayAdapter<BE_Empleado> implemen
             mainHolderProveedorLocal.tvTelefono = (TextView) convertView.findViewById(R.id.tvTelefono);
             mainHolderProveedorLocal.llFoto = (LinearLayout) convertView.findViewById(R.id.llFoto);
             mainHolderProveedorLocal.llPuntajes = (LinearLayout) convertView.findViewById(R.id.llPuntajes);
+            mainHolderProveedorLocal.tvPuntaje = (TextView) convertView.findViewById(R.id.tvPuntaje);
             mainHolderProveedorLocal.ivFoto = (ImageView) convertView.findViewById(R.id.ivFoto);
             mainHolderProveedorLocal.btComentarios = (Button) convertView.findViewById(R.id.btComentarios);
             mainHolderProveedorLocal.btContactar = (Button) convertView.findViewById(R.id.btContactar);
@@ -94,7 +95,7 @@ public class MainAdapterListaOperador extends ArrayAdapter<BE_Empleado> implemen
             mainHolderProveedorLocal.tvExperiencia.setText("" + establecimiento.getExperiencia_Operario() + " Años");
             mainHolderProveedorLocal.tvDNI.setText(establecimiento.getNumDocId_Operario());
             mainHolderProveedorLocal.tvTelefono.setText(establecimiento.getTelefono_Operario());
-
+            mainHolderProveedorLocal.tvPuntaje.setText(""+establecimiento.getPuntaje());
 
             mainHolderProveedorLocal.btComentarios.setOnClickListener(new View.OnClickListener() {
                 @Override
