@@ -255,16 +255,16 @@
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyBC8TQM4FOlHD_QsRISuUfvlF75_k8xjR4" />-->
 
-        <service
-            android:name="pe.com.hatunsol.ferreterias.UbicacionService"
-            android:enabled="true"
-            android:exported="true"></service>
+        <!--    <service
+              android:name="pe.com.hatunsol.ferreterias.UbicacionService"
+              android:enabled="true"
+              android:exported="true"></service>
 
-      <!--  <receiver android:name="pe.com.hatunsol.ferreterias.IniciadorServicio">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
-            </intent-filter>
-        </receiver>-->
+        <receiver android:name="pe.com.hatunsol.ferreterias.IniciadorServicio">
+              <intent-filter>
+                  <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+              </intent-filter>
+          </receiver>-->
 
 
     </application>
