@@ -1,5 +1,7 @@
 package pe.com.hatunsol.ferreterias;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -36,6 +38,7 @@ import pe.com.hatunsol.ferreterias.entity.Parametro;
 import pe.com.hatunsol.ferreterias.entity.RestResult;
 import pe.com.hatunsol.ferreterias.model.Distrito;
 import pe.com.hatunsol.ferreterias.rest.RestClient;
+import pe.com.hatunsol.ferreterias.utilitario.Util;
 
 import static pe.com.hatunsol.ferreterias.utilitario.Util.BE_DatosUsuario;
 import static pe.com.hatunsol.ferreterias.utilitario.Util.MensajeInicialSeleccione;
@@ -292,6 +295,8 @@ public class ContactarActivity extends ActionBarActivity implements AceptarDialo
                     args.putInt("Operacion", BE_Constantes.Operacion.Salir);
                     confirmacionDialogfragment.setArguments(args);
                     confirmacionDialogfragment.show(getSupportFragmentManager(), AceptarDialogfragment.TAG);
+
+                    Util.sendSMS(BE_DatosUsuario.getCelular(), "El Cliente " + BE_DatosUsuario.getNombre() + " desea contactarlo para un Trabajo de " + ((BE_Tarea) spServicio.getSelectedItem()).getNombre_Tarea() + ", por favor contactarlo al " + BE_DatosUsuario.getCelular());
                 }
             } catch (Exception ex) {
                 confirmacionDialogfragment.setMensaje("Error al Registrar: " + ex.getMessage());
@@ -321,7 +326,7 @@ public class ContactarActivity extends ActionBarActivity implements AceptarDialo
                 //Enviar en Vacio los Campos que no siempre se llenan (solo titular o Prospecto)
                 //jsonObject.put("IdCliente", BE_DatosUsuario.getEmpleadoId());
                 jsonObject.put("IdCliente", BE_DatosUsuario.getEmpleadoId());
-                jsonObject.put("IdEmpleado", extras.getInt("IdEmpleado",0));
+                jsonObject.put("IdEmpleado", extras.getInt("IdEmpleado", 0));
                 jsonObject.put("UserIdCrea", BE_DatosUsuario.getUserId());
                 jsonObject.put("IdTarea", ((BE_Tarea) spServicio.getSelectedItem()).getIdTarea());
                 jsonObject.put("Tarea", ((BE_Tarea) spServicio.getSelectedItem()).getNombre_Tarea());
@@ -340,4 +345,5 @@ public class ContactarActivity extends ActionBarActivity implements AceptarDialo
             return new RestClient().post("WSSolicitud.svc/Registrar", stringEntity, 30000);
         }
     }
+
 }

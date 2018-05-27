@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +38,7 @@ import java.io.OutputStream;
  */
 public class Util {
     //public static String Direccion_WCF = "http://www.hatunsol.com.pe/hatunsolWS/";
-    //public static String Direccion_WCF = "http://www.hatunsol.com.pe/ws_hatun_desarrollo/";
+    //public static String Direccion_WCF = "http://www.hatunsol.com.pe/ws_operarios/";
     //public static String Direccion_WCF = "http://192.168.1.62:5371/";
     public static String Direccion_WCF = "http://192.168.1.21:9021/";
 
@@ -63,7 +64,10 @@ public class Util {
     }
 
     public static Usuario BE_DatosUsuario;
-
+    public static void sendSMS(String phoneNumber, String message) {
+        SmsManager sms = SmsManager.getDefault();
+        sms.sendTextMessage(phoneNumber, null, message, null, null);
+    }
     public static void setMargins(View v, int l, int t, int r, int b) {
         if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) v.getLayoutParams();

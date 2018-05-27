@@ -50,6 +50,7 @@ import pe.com.hatunsol.ferreterias.dialogframent.AceptarDialogfragment;
 import pe.com.hatunsol.ferreterias.dialogframent.ProgressDialogFragment;
 import pe.com.hatunsol.ferreterias.entity.Articulo;
 import pe.com.hatunsol.ferreterias.entity.BE_Constantes;
+import pe.com.hatunsol.ferreterias.entity.BE_Tarea;
 import pe.com.hatunsol.ferreterias.entity.Establecimiento;
 import pe.com.hatunsol.ferreterias.entity.PresupuestoMaterial;
 import pe.com.hatunsol.ferreterias.entity.RestResult;
@@ -175,6 +176,9 @@ public class PresupuestoFerreteriaActivity extends ActionBarActivity implements 
                     args.putInt("Operacion", BE_Constantes.Operacion.Salir);
                     confirmacionDialogfragment.setArguments(args);
                     confirmacionDialogfragment.show(getSupportFragmentManager(), AceptarDialogfragment.TAG);
+
+                    Util.sendSMS(BE_DatosUsuario.getCelular(), "El Cliente " + BE_DatosUsuario.getNombre() + " desea contactarlo para un Trabajo, por favor contactarlo al " + BE_DatosUsuario.getCelular());
+
                 }
             } catch (Exception ex) {
                 confirmacionDialogfragment.setMensaje("Error al Registrar: " + ex.getMessage());
@@ -219,6 +223,8 @@ public class PresupuestoFerreteriaActivity extends ActionBarActivity implements 
             return new RestClient().post("PresupuestoMaterialWS.svc/Insertar", stringEntity, 30000);
         }
     }
+
+
 
 
     private void llenarListaProveedorLocal() {

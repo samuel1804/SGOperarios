@@ -11,6 +11,24 @@ private int UserId;
     private Rol Rol;
     private int EmpleadoId;
     private Boolean IsActive;
+    private String Celular;
+    private String Nombre;
+
+    public String getNombre() {
+        return Nombre;
+    }
+
+    public void setNombre(String nombre) {
+        Nombre = nombre;
+    }
+
+    public String getCelular() {
+        return Celular;
+    }
+
+    public void setCelular(String celular) {
+        Celular = celular;
+    }
 
     public Boolean getActive() {
         return IsActive;

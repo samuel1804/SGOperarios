@@ -152,6 +152,8 @@ public class LoginActivity extends ActionBarActivity implements AceptarDialogfra
                 usuario.setEmpleadoId(jsonobj.getInt("IdEmpleado"));
                 usuario.setActive(jsonobj.getBoolean("Activo"));
                 usuario.setUserId(jsonobj.getInt("IdUser"));
+                usuario.setCelular(jsonobj.getString("Celular"));
+                usuario.setNombre(jsonobj.getString("Nombre"));
                 /*Rol rol=new Rol();
                 rol.setRolId(jsonobj.getJSONObject("Rol").getInt("RolId"));
                 rol.setRolDes(jsonobj.getJSONObject("Rol").getString("RolDes"));
